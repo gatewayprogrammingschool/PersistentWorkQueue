@@ -2,9 +2,9 @@ name: .NET
 
 on:
   push:
-    branches: [ master, release/* ]
+    branches: [ master, main, release/* ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, main ]
   workflow_dispatch:
 
 jobs:
