@@ -39,6 +39,8 @@ jobs:
       run: dotnet build -c Release --no-restore 
     - name: Test
       run: dotnet test -c Release --no-build
+    - name: Dotnet Tests
+      uses: EasyDesk/action-dotnet-test@v0.1.0
     - name: Publish
       if: ${{ github.event_name == 'push.tags' }}
       run: | 
