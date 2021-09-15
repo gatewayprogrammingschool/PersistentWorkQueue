@@ -10,10 +10,12 @@ namespace PersistentWorkQueue
 {
     public class WorkQueue<TRequest>
     {
-        private ConcurrentQueue<RequestWrapper<TRequest>> _requestQueue;
-        private Timer _timer;
+        private ConcurrentQueue<RequestWrapper<TRequest>> _requestQueue
+            = new ConcurrentQueue<RequestWrapper<TRequest>>();
 
-        public WorkQueue(Action<TRequest> action, WorkQueueOptions options = default)
+        private Timer? _timer;
+
+        public WorkQueue(Action<TRequest> action, WorkQueueOptions options)
         {
             QueueType = QueueTypes.Action;
             Action = action;
@@ -22,7 +24,7 @@ namespace PersistentWorkQueue
             SetupWorkQueue();
         }
 
-        public WorkQueue(Delegate @delegate, WorkQueueOptions options = default)
+        public WorkQueue(Delegate @delegate, WorkQueueOptions options)
         {
             QueueType = QueueTypes.Delegate;
             Delegate = @delegate;
@@ -31,10 +33,36 @@ namespace PersistentWorkQueue
             SetupWorkQueue();
         }
 
-        public WorkQueue(QueueTypes queueType, WorkQueueOptions options = default)
+        public WorkQueue(QueueTypes queueType, WorkQueueOptions options)
         {
             QueueType = queueType;
             Options = options;
+
+            SetupWorkQueue();
+        }
+
+        public WorkQueue(Action<TRequest> action)
+        {
+            QueueType = QueueTypes.Action;
+            Action = action;
+            Options = new();
+
+            SetupWorkQueue();
+        }
+
+        public WorkQueue(Delegate @delegate)
+        {
+            QueueType = QueueTypes.Delegate;
+            Delegate = @delegate;
+            Options = new();
+
+            SetupWorkQueue();
+        }
+
+        public WorkQueue(QueueTypes queueType)
+        {
+            QueueType = queueType;
+            Options = new();
 
             SetupWorkQueue();
         }
@@ -50,8 +78,6 @@ namespace PersistentWorkQueue
 
         private void SetupWorkQueue()
         {
-            _requestQueue = new ConcurrentQueue<RequestWrapper<TRequest>>();
-
             StartTimer();
         }
 
@@ -117,11 +143,16 @@ namespace PersistentWorkQueue
             return wrapper;
         }
 
-        public event Action<TRequest> OnAction;
-        public event Action<RequestWrapper<TRequest>> OnPersist;
-        public event Action<RequestWrapper<TRequest>> OnCompleted;
+        public event Action<TRequest>? OnAction;
+        public event Action<RequestWrapper<TRequest>>? OnPersist;
+        public event Action<RequestWrapper<TRequest>>? OnCompleted;
 
-        public bool DoWork(CancellationToken token = default)
+        public bool DoWork()
+        {
+            return DoWork(default);
+        }
+
+        public bool DoWork(CancellationToken token)
         {
             var workList = _requestQueue.Where(w => !w.IsCanceled).ToList();
             try
@@ -155,15 +186,15 @@ namespace PersistentWorkQueue
                     switch (QueueType)
                     {
                         case QueueTypes.Action:
-                            Action(wrapper.request);
+                            Action?.Invoke(wrapper.Request);
                             break;
 
                         case QueueTypes.Delegate:
-                            Delegate.DynamicInvoke(wrapper.request);
+                            Delegate?.DynamicInvoke(wrapper.Request);
                             break;
 
                         case QueueTypes.Event:
-                            OnAction?.Invoke(wrapper.request);
+                            OnAction?.Invoke(wrapper.Request);
                             break;
                     }
 
@@ -204,8 +235,8 @@ namespace PersistentWorkQueue
         }
 
         public QueueTypes QueueType { get; }
-        public Delegate Delegate { get; }
-        public Action<TRequest> Action { get; }
+        public Delegate? Delegate { get; }
+        public Action<TRequest>? Action { get; }
         public WorkQueueOptions Options { get; }
     }
 }
