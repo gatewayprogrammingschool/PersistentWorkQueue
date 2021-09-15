@@ -79,7 +79,7 @@ namespace PersistentWorkQueue.Tests
 
             wrappers.Count.Should().Be(values.Length);
 
-            var mres = wrappers.Select(w => w.request.Mre).ToArray();
+            var mres = wrappers.Select(w => w.Request.Mre).ToArray();
 
             ManualResetEvent.WaitAll(mres).Should().BeTrue();
 
@@ -134,13 +134,13 @@ namespace PersistentWorkQueue.Tests
 
         private void MreOnCompleted(RequestWrapper<ManualResetEvent> wrapper)
         {
-            wrapper.request.Set();
+            wrapper.Request.Set();
         }
 
         private void MreOnCompleted2(RequestWrapper<ResettablePair> wrapper)
         {
-            Console.WriteLine(wrapper.request.Value);
-            wrapper.request.Mre.Set();
+            Console.WriteLine(wrapper.Request.Value);
+            wrapper.Request.Mre.Set();
         }
 
         [TestMethod()]
