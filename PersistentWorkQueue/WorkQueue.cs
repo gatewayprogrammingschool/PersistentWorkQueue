@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 
 namespace PersistentWorkQueue
 {
-    public class WorkQueue<TRequest>
+    public class WorkQueue<TRequest> : IDisposable
     {
         private ConcurrentQueue<RequestWrapper<TRequest>> _requestQueue
             = new ConcurrentQueue<RequestWrapper<TRequest>>();
 
         private Timer? _timer;
+        private bool disposedValue;
 
         public WorkQueue(Action<TRequest> action, WorkQueueOptions options)
         {
@@ -238,5 +239,25 @@ namespace PersistentWorkQueue
         public Delegate? Delegate { get; }
         public Action<TRequest>? Action { get; }
         public WorkQueueOptions Options { get; }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _timer?.Dispose();
+                    _requestQueue.Clear();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }
