@@ -10,8 +10,8 @@ namespace PersistentWorkQueue
 {
     public class WorkQueue<TRequest> : IDisposable
     {
-        private ConcurrentQueue<RequestWrapper<TRequest>> _requestQueue
-            = new ConcurrentQueue<RequestWrapper<TRequest>>();
+        private readonly ConcurrentQueue<RequestWrapper<TRequest>> _requestQueue
+            = new ();
 
         private Timer? _timer;
         private bool disposedValue;
@@ -107,7 +107,12 @@ namespace PersistentWorkQueue
             _timer = null;
         }
 
-        public IEnumerable<RequestWrapper<TRequest>> Enqueue(IEnumerable<TRequest> requests, CancellationToken token = default)
+        public IEnumerable<RequestWrapper<TRequest>> Enqueue(IEnumerable<TRequest> requests)
+        {
+            return Enqueue(requests, default);
+        }
+
+        public IEnumerable<RequestWrapper<TRequest>> Enqueue(IEnumerable<TRequest> requests, CancellationToken? token)
         {
             List<RequestWrapper<TRequest>> newItems = new();
 
@@ -131,7 +136,12 @@ namespace PersistentWorkQueue
             return newItems;
         }
 
-        public RequestWrapper<TRequest> Enqueue(TRequest request, CancellationToken token = default)
+        public RequestWrapper<TRequest> Enqueue(TRequest request)
+        {
+            return Enqueue(request, default);
+        }
+
+        public RequestWrapper<TRequest> Enqueue(TRequest request, CancellationToken? token)
         {
             RequestWrapper<TRequest> wrapper = new(request);
 
@@ -153,7 +163,7 @@ namespace PersistentWorkQueue
             return DoWork(default);
         }
 
-        public bool DoWork(CancellationToken token)
+        public bool DoWork(CancellationToken? token)
         {
             var workList = _requestQueue.Where(w => !w.IsCanceled).ToList();
             try
@@ -162,7 +172,14 @@ namespace PersistentWorkQueue
 
                 if (Options.FireAndForget)
                 {
-                    Task.Run(() => PerformActions(workList), token);
+                    if(token is CancellationToken tk)
+                    { 
+                        Task.Run((Action)(() => PerformActions(workList)), tk);
+                    }
+                    else
+                    {
+                        Task.Run((Action)(() => PerformActions(workList)));
+                    }
                 }
                 else
                 {
