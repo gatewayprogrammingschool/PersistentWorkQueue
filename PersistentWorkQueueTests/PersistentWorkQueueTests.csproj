@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>.NETCoreApp,Version=v5.0</TargetFramework>
-
+    <TargetFrameworks>net5.0;net48</TargetFrameworks>
+	  <LangVersion>10.0</LangVersion>
     <IsPackable>false</IsPackable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,8 +14,12 @@
     <PackageReference Include="MSTest.TestFramework" Version="2.2.3" />
     <PackageReference Include="coverlet.collector" Version="3.0.2" />
   </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" Condition="'$(TargetFramework)'=='net48'" />
+		<PackageReference Include="System.Collections.Immutable" Version="5.0.0" Condition="'$(TargetFramework)'=='net48'" />
+	</ItemGroup>
 
-  <ItemGroup>
+	<ItemGroup>
     <ProjectReference Include="..\PersistentWorkQueue\PersistentWorkQueue.csproj" />
   </ItemGroup>
 

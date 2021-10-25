@@ -1,37 +1,42 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-	  <PackageTags>"Work Queue" Dotnet C# CSharp</PackageTags>
-	  <Description>
-		  Persistable work queue component for operating in-process reliable queues.
-	  </Description>
-	  <Authors>Payton Byrd</Authors>
-	  <Company>Gateway Programming School, Inc.</Company>
-	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
-	  <PackageProjectUrl>http://PersistentWorkQueue.gatewayprogramming.school</PackageProjectUrl>
-	  <PackageIcon>docs\Square-Logo-GPS.png</PackageIcon>
-	  <Version>2.0.0</Version>
-	  <Nullable>enable</Nullable>
-	  <DebugType>portable</DebugType>
-	  <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
-	  <Copyright>©️ 2017-2021, Gateway Programming School, Inc.</Copyright>
-	  <RepositoryUrl>https://github.com/gatewayprogrammingschool/PersistentWorkQueue</RepositoryUrl>
-	  <RepositoryType>git</RepositoryType>
-	  <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-	  <PublishRepositoryUrl>true</PublishRepositoryUrl>
-	  <EmbedUntrackedSources>true</EmbedUntrackedSources>
-	  <IncludeSymbols>true</IncludeSymbols>
-	  <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	  <ApplicationIcon>..\Square-Logo-GPS.ico</ApplicationIcon>
+    <TargetFrameworks>net5.0;net6.0;netstandard2.0</TargetFrameworks>
+      <PackageTags>"Work Queue" Dotnet C# CSharp</PackageTags>
+      <Description>
+          Persistable work queue component for operating in-process reliable queues.
+      </Description>
+      <Authors>Payton Byrd</Authors>
+      <Company>Gateway Programming School, Inc.</Company>
+      <PackageLicenseExpression>MIT</PackageLicenseExpression>
+      <PackageProjectUrl>http://PersistentWorkQueue.gatewayprogramming.school</PackageProjectUrl>
+      <PackageIcon>docs\Square-Logo-GPS.png</PackageIcon>
+      <Version>2.1.0</Version>
+      <Nullable>enable</Nullable>
+      <DebugType>portable</DebugType>
+      <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+      <Copyright>©️ 2017-2021, Gateway Programming School, Inc.</Copyright>
+      <RepositoryUrl>https://github.com/gatewayprogrammingschool/PersistentWorkQueue</RepositoryUrl>
+      <RepositoryType>git</RepositoryType>
+      <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+      <PublishRepositoryUrl>true</PublishRepositoryUrl>
+      <EmbedUntrackedSources>true</EmbedUntrackedSources>
+      <IncludeSymbols>true</IncludeSymbols>
+      <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+      <ApplicationIcon>..\Square-Logo-GPS.ico</ApplicationIcon>
+      <LangVersion>10.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-	  <content Include="..\docs\Square-Logo-GPS.png">
-		  <Link>docs\Square-Logo-GPS.png</Link>
-		  <Pack>True</Pack>
-		  <PackagePath>docs\Square-Logo-GPS.png</PackagePath>
-	  </content>
+      <content Include="..\docs\Square-Logo-GPS.png">
+          <Link>docs\Square-Logo-GPS.png</Link>
+          <Pack>True</Pack>
+          <PackagePath>docs\Square-Logo-GPS.png</PackagePath>
+      </content>
   </ItemGroup>
-	
+
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" Condition="'$(TargetFramework)'=='netstandard2.0'"/>
+        <PackageReference Include="System.Collections.Immutable" Version="5.0.0" Condition="'$(TargetFramework)'=='netstandard2.0'"/>
+    </ItemGroup>
 </Project>

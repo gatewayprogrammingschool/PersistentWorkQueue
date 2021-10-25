@@ -67,30 +67,43 @@ namespace PersistentWorkQueue.Tests
         [DataTestMethod]
         [DataRow(1)]
         [DataRow(1, 2, 3)]
-        public void AddWorkForAction(params int[] values)
+        public async Task AddWorkForAction(params int[] values)
         {
-            var q = new WorkQueue<ResettablePair>(_testAction, _noTimerOptions);
+            Exception ex = null;
+            await Task.Run(() =>
+            {
+                var q = new WorkQueue<ResettablePair>(_testAction, _noTimerOptions);
 
-            q.OnCompleted += MreOnCompleted2;
+                q.OnCompleted += MreOnCompleted2;
 
 #pragma warning disable PH_P012 // Prefer Slim Synchronization
-            var wrappers = q.Enqueue(values.Select(v => new ResettablePair(v, new ManualResetEvent(false)))).ToList();
+                var wrappers = q.Enqueue(values.Select(v => new ResettablePair(v, new ManualResetEvent(false))))
+                    .ToList();
 #pragma warning restore PH_P012 // Prefer Slim Synchronization
 
-            wrappers.Count.Should().Be(values.Length);
+                wrappers.Count.Should().Be(values.Length);
 
-            var mres = wrappers.Select(w => w.Request.Mre).ToArray();
+                var mres = wrappers.Select(w => w.Request.Mre).ToArray();
 
-            ManualResetEvent.WaitAll(mres).Should().BeTrue();
+                ManualResetEvent.WaitAll(mres).Should().BeTrue();
 
-            wrappers.ForEach(wrapper =>
-            { 
-                wrapper.Id.Should().NotBe(default(Guid));
+                wrappers.ForEach(wrapper =>
+                {
+                    wrapper.Id.Should().NotBe(default(Guid));
 
-                wrapper.Attempts.Should().BeEmpty();
+                    wrapper.Attempts.Should().BeEmpty();
 
-                q.Succeeded.First(w => w.Id == wrapper.Id).Should().NotBeNull();
+                    q.Succeeded.First(w => w.Id == wrapper.Id).Should().NotBeNull();
+                });
+            }).ContinueWith(task =>
+            {
+                if (task.Exception is not null)
+                {
+                    ex = task.Exception;
+                }
             });
+
+            ex.Should().BeNull(ex?.ToString());
         }
 
         [TestMethod()]
