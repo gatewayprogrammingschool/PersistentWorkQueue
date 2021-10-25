@@ -49,8 +49,12 @@ jobs:
     - name: Build Release
       if: ${{ github.event_name == 'release' }}
       run: dotnet build -c Release --no-restore 
-    - name: Dotnet Tests
-      run: dotnet test --no-build
+    - name: Dotnet Debug Tests
+      if: ${{ github.event_name != 'release' }}
+      run: dotnet test -c Debug --no-restore
+    - name: Dotnet Release Tests
+      if: ${{ github.event_name == 'release' }}
+      run: dotnet test -c Release --no-restore
     - name: Publish
       if: ${{ github.event_name == 'release' }}
       run: | 
