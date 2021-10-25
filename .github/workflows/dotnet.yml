@@ -17,8 +17,8 @@ jobs:
     steps:
      - name: Event
        with:       
-        event_name: ${{ github.event_name }}
-       run: Write-Host "event_name $event_name"
+         event_name: ${{ github.event_name }}
+       run: echo "event_name $event_name"
 
     - name: Checkout
       uses: actions/checkout@v1
