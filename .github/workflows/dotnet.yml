@@ -1,10 +1,10 @@
 name: .NET
 
 on:
+  release:
+    types: [released]
   push:
     branches: [ master, main, release/* ]
-    tags:
-      - v*
   pull_request:
     branches: [ master, main ]
   workflow_dispatch:
@@ -42,17 +42,17 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build Debug
-      if: ${{ github.event_name != 'push.tags' }}
+      if: ${{ github.event_name != 'release.released' }}
       run: |
         echo "github.event_name: ${{ github.event_name }}"
         dotnet build -c Debug --no-restore 
     - name: Build Release
-      if: ${{ github.event_name == 'push.tags' }}
+      if: ${{ github.event_name == 'release.released' }}
       run: dotnet build -c Release --no-restore 
     - name: Dotnet Tests
       run: dotnet test --no-build
     - name: Publish
-      if: ${{ github.event_name == 'push.tags' }}
+      if: ${{ github.event_name == 'release.released' }}
       run: | 
         $outPath = (Join-Path . -Child packages)
         dotnet pack -c Release --no-restore --include-source --no-build -o $outPath 
