@@ -15,6 +15,11 @@ jobs:
     runs-on: windows-latest
 
     steps:
+     - name: Event
+       with:       
+        event_name: ${{ github.event_name }}
+       run: Write-Host "event_name $event_name"
+
     - name: Checkout
       uses: actions/checkout@v1
       
@@ -39,7 +44,9 @@ jobs:
       run: dotnet restore
     - name: Build Debug
       if: ${{ github.event_name != 'push.tags' }}
-      run: dotnet build -c Debug --no-restore 
+      run: |
+        echo "github.event_name: ${{ github.event_name }}"
+        dotnet build -c Debug --no-restore 
     - name: Build Release
       if: ${{ github.event_name == 'push.tags' }}
       run: dotnet build -c Release --no-restore 
