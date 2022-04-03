@@ -218,11 +218,11 @@ namespace PersistentWorkQueue
 
                     lock (_requestQueue)
                     { 
+                        wrapper.CompletedOn = DateTimeOffset.UtcNow;
                         Succeeded = Succeeded.Add(wrapper);
+
                         workList.Remove(wrapper);
                     }
-
-                    wrapper.CompletedOn = DateTimeOffset.UtcNow;
 
                     OnCompleted?.Invoke(wrapper);
                 }
