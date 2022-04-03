@@ -35,7 +35,7 @@ jobs:
         
     - name: Setup Scoop
       run: |
-        iwr -useb get.scoop.sh | iex
+        iwr -useb get.scoop.sh | iex -RunAsAdmin
         scoop install gitversion
         GitVersion
         
