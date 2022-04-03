@@ -35,7 +35,7 @@ jobs:
         
     - name: Setup Scoop
       run: |
-        iwr -useb get.scoop.sh | iex -RunAsAdmin
+        iwr -useb get.scoop.sh -OutFile ~\install-scoop.ps1; . ~\install-scoop.ps1 -RunAsAdmin
         scoop install gitversion
         GitVersion
         
