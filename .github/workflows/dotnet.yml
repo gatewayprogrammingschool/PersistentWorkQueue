@@ -42,17 +42,21 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build Debug
-      if: ${{ github.event_name != 'release.released' }}
+      if: ${{ github.event_name != 'release' }}
       run: |
         echo "github.event_name: ${{ github.event_name }}"
         dotnet build -c Debug --no-restore 
     - name: Build Release
-      if: ${{ github.event_name == 'release.released' }}
+      if: ${{ github.event_name == 'release' }}
       run: dotnet build -c Release --no-restore 
-    - name: Dotnet Tests
-      run: dotnet test --no-build
+    - name: Dotnet Debug Tests
+      if: ${{ github.event_name != 'release' }}
+      run: dotnet test -c Debug --no-restore
+    - name: Dotnet Release Tests
+      if: ${{ github.event_name == 'release' }}
+      run: dotnet test -c Release --no-restore
     - name: Publish
-      if: ${{ github.event_name == 'release.released' }}
+      if: ${{ github.event_name == 'release' }}
       run: | 
         $outPath = (Join-Path . -Child packages)
         dotnet pack -c Release --no-restore --include-source --no-build -o $outPath 
